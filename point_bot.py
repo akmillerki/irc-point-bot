@@ -1,6 +1,9 @@
+import argparse
 import collections
+import dotenv
 import irc.bot
 import itertools
+import os
 import yaml
 
 class PointBot(irc.bot.SingleServerIRCBot):
@@ -163,7 +166,20 @@ class PointBot(irc.bot.SingleServerIRCBot):
         self.save_points()
 
 def main():
-    bot = PointBot('##cm', 'record.yml')
+    dotenv.load_dotenv(os.path.join(os.path.dirname(__file__), '.env'))
+    parser = argparse.ArgumentParser(description='IRC Bot for Keeping Score')
+
+    if os.environ.get('CHANNEL'):
+        parser.add_argument('--channel', default=os.environ.get('CHANNEL'))
+    else:
+        parser.add_argument('channel')
+    if os.environ.get('RECORD'):
+        parser.add_argument('--record', default=os.environ.get('RECORD'))
+    else:
+        parser.add_argument('record')
+
+    args = parser.parse_args()
+    bot = PointBot(args.channel, args.record)
     bot.start()
 
 if __name__ == '__main__': main()

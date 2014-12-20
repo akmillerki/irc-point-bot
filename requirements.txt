@@ -1,7 +1,9 @@
 PyYAML==3.11
+click==3.3
 irc==11.0.1
 jaraco.timing==1.1
 jaraco.util==10.6
 more-itertools==2.2
+python-dotenv==0.1.0
 six==1.8.0
 wsgiref==0.1.2
