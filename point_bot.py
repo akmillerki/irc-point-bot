@@ -58,8 +58,7 @@ class PointBot(irc.bot.SingleServerIRCBot):
     ]
     POINTS_HELP_MESSAGE_FORMAT = 'Use the format: {prefix} <nick> <value>'
 
-    def __init__(self, channel, record_filename, prefix='!points',
-            nickname='point_bot', server='irc.freenode.net', port=6667):
+    def __init__(self, channel, record_filename, prefix, nickname, server, port):
         super(PointBot, self).__init__([(server, port)], nickname, nickname)
         logger.debug('Starting')
         self.channel = channel
@@ -191,17 +190,28 @@ def main():
     dotenv.load_dotenv(os.path.join(os.path.dirname(__file__), '.env'))
     parser = argparse.ArgumentParser(description='IRC Bot for Keeping Score')
 
+    if os.environ.get('NICK'):
+        parser.add_argument('--nick', default=os.environ.get('NICK'))
+    else:
+        parser.add_argument('nick')
+
     if os.environ.get('CHANNEL'):
         parser.add_argument('--channel', default=os.environ.get('CHANNEL'))
     else:
         parser.add_argument('channel')
+
     if os.environ.get('RECORD'):
         parser.add_argument('--record', default=os.environ.get('RECORD'))
     else:
         parser.add_argument('record')
 
+    parser.add_argument('--prefix', default=os.environ.get('PREFIX', '!points'))
+    parser.add_argument('--server', default=os.environ.get('SERVER', 'irc.freenode.net'))
+    parser.add_argument('--port', type=int, default=os.environ.get('PORT', 6667))
+
     args = parser.parse_args()
-    bot = PointBot(args.channel, args.record)
+    bot = PointBot(args.channel, args.record, args.prefix, args.nick,
+                   args.server, args.port)
     bot.start()
 
 if __name__ == '__main__': main()
